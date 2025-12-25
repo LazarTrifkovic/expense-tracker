@@ -32,9 +32,15 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
+        let errorMessage = "Došlo je do greške prilikom prijave"
+
+        if (result.error === "CredentialsSignin") {
+          errorMessage = "Pogrešan email ili lozinka. Proverite da li nalog postoji."
+        }
+
         toast({
-          title: "Greška",
-          description: result.error,
+          title: "Greška pri prijavi",
+          description: errorMessage,
           variant: "destructive",
         })
       } else {

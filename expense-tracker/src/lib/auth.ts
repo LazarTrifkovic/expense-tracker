@@ -13,7 +13,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email i lozinka su obavezni")
+          return null
         }
 
         const user = await prisma.user.findUnique({
@@ -21,13 +21,13 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (!user) {
-          throw new Error("Korisnik nije pronađen")
+          return null
         }
 
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
 
         if (!isPasswordValid) {
-          throw new Error("Pogrešna lozinka")
+          return null
         }
 
         return {
