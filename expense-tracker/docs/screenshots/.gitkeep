@@ -1,0 +1,14 @@
+# Screenshots
+
+Dodaj slike ekrana u ovaj folder:
+
+- landing.png - Početna stranica
+- login.png - Stranica za prijavu
+- register.png - Stranica za registraciju
+- dashboard.png - Kontrolna tabla
+- groups.png - Lista grupa
+- group-details.png - Detalji grupe
+- expense-dialog.png - Modal za dodavanje troška
+- settlement-dialog.png - Modal za poravnanje
+
+Preporučena rezolucija: 1280x720 ili 1920x1080

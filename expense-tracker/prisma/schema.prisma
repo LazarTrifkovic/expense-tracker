@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  SYSTEM_ADMIN
+}
+
+enum GroupType {
+  APARTMENT
+  TRIP
+  PROJECT
+  OTHER
+}
+
+enum GroupMemberRole {
+  MEMBER
+  ADMIN
+}
+
+enum SplitType {
+  EQUAL
+  UNEQUAL
+  PERCENTAGE
+  SHARES
+}
+
+enum Category {
+  FOOD
+  TRANSPORT
+  UTILITIES
+  ENTERTAINMENT
+  SHOPPING
+  OTHER
+}
+
+enum SettlementStatus {
+  PENDING
+  CONFIRMED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+}
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  password       String
+  name           String?
+  image          String?
+  emailVerified  DateTime?
+  verifyToken    String?
+  role           UserRole  @default(USER)
+  isActive       Boolean   @default(true)
+  lastLoginAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  groups         GroupMember[]
+  expensesPaid   Expense[]       @relation("PaidBy")
+  expenseSplits  ExpenseSplit[]
+  settlementsPaid     Settlement[] @relation("Payer")
+  settlementsReceived Settlement[] @relation("Receiver")
+  createdGroups  Group[]         @relation("CreatedBy")
+
+  @@index([name])
+}
+
+model Group {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  type        GroupType  @default(APARTMENT)
+  currency    String     @default("RSD")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  createdById String
+  createdBy   User       @relation("CreatedBy", fields: [createdById], references: [id])
+  members     GroupMember[]
+  expenses    Expense[]
+  settlements Settlement[]
+  invitations Invitation[]
+}
+
+model GroupMember {
+  id       String          @id @default(cuid())
+  role     GroupMemberRole @default(MEMBER)
+  joinedAt DateTime        @default(now())
+
+  // Relations
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+}
+
+model Expense {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  amount      Float
+  date        DateTime  @default(now())
+  category    Category  @default(OTHER)
+  splitType   SplitType @default(EQUAL)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  groupId  String
+  group    Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  paidById String
+  paidBy   User   @relation("PaidBy", fields: [paidById], references: [id])
+  splits   ExpenseSplit[]
+
+  @@index([date])
+}
+
+model ExpenseSplit {
+  id         String  @id @default(cuid())
+  amount     Float
+  percentage Float?
+  shares     Int?
+
+  // Relations
+  expenseId String
+  expense   Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+
+  @@unique([expenseId, userId])
+}
+
+model Settlement {
+  id          String           @id @default(cuid())
+  amount      Float
+  status      SettlementStatus @default(PENDING)
+  notes       String?
+  createdAt   DateTime         @default(now())
+  confirmedAt DateTime?
+
+  // Relations
+  groupId    String
+  group      Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  payerId    String
+  payer      User   @relation("Payer", fields: [payerId], references: [id])
+  receiverId String
+  receiver   User   @relation("Receiver", fields: [receiverId], references: [id])
+
+  @@index([status])
+}
+
+model Invitation {
+  id        String           @id @default(cuid())
+  email     String
+  token     String           @unique @default(cuid())
+  status    InvitationStatus @default(PENDING)
+  expiresAt DateTime
+  createdAt DateTime         @default(now())
+
+  // Relations
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+}
