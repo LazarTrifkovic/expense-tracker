@@ -22,14 +22,31 @@ export function calculateBalances(
     amount: number
     status: string
   }[],
-  bossUserIds: Set<string> = new Set()
+  bossUserIds: Set<string> = new Set(),
+  tataUserIds: Set<string> = new Set()
 ): Map<string, number> {
   const balances = new Map<string, number>()
+
+  // Pronalazimo prvog TATA korisnika (ako postoji)
+  const tataUserId = tataUserIds.size > 0 ? [...tataUserIds][0] : null
 
   // Racunanje iz troskova
   for (const expense of expenses) {
     // Ako je platioc BOSS, preskacemo kredit i splitove - niko ne duguje sefu
     if (bossUserIds.has(expense.paidById)) {
+      continue
+    }
+
+    // Ako postoji TATA u grupi - tata preuzima ceo trosak na sebe
+    // Platioc nema nikakve gubitke, tata duguje sve
+    if (tataUserId) {
+      const currentTata = balances.get(tataUserId) || 0
+      balances.set(tataUserId, currentTata - expense.amount)
+      // Ako platioc nije tata, daj mu kredit za ono sto je platio (neutralise ga)
+      if (expense.paidById !== tataUserId) {
+        const currentPaidBy = balances.get(expense.paidById) || 0
+        balances.set(expense.paidById, currentPaidBy + expense.amount)
+      }
       continue
     }
 

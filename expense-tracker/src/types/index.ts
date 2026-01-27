@@ -2,11 +2,12 @@ export type GroupType = "APARTMENT" | "TRIP" | "PROJECT" | "OTHER"
 export type Category = "FOOD" | "TRANSPORT" | "UTILITIES" | "ENTERTAINMENT" | "SHOPPING" | "OTHER"
 export type SplitType = "EQUAL" | "UNEQUAL" | "PERCENTAGE" | "SHARES"
 export type Currency = "RSD" | "EUR"
-export type UserRole = "USER" | "BOSS" | "SYSTEM_ADMIN"
+export type UserRole = "USER" | "BOSS" | "TATA" | "SYSTEM_ADMIN"
 
 export const USER_ROLE_LABELS: Record<UserRole, string> = {
   USER: "Korisnik",
   BOSS: "Šef",
+  TATA: "Tata",
   SYSTEM_ADMIN: "Administrator",
 }
 

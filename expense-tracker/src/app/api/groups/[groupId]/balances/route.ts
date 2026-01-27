@@ -49,8 +49,17 @@ export async function GET(
       members.filter(m => m.user.role === "BOSS").map(m => m.user.id)
     )
 
+    // Pronadji TATA korisnike - u TRIP grupama tata preuzima sve troskove
+    const group = await prisma.group.findUnique({
+      where: { id: groupId },
+      select: { type: true },
+    })
+    const tataUserIds = group?.type === "TRIP"
+      ? new Set(members.filter(m => m.user.role === "TATA").map(m => m.user.id))
+      : new Set<string>()
+
     // Calculate balances
-    const balances = calculateBalances(expenses, settlements, bossUserIds)
+    const balances = calculateBalances(expenses, settlements, bossUserIds, tataUserIds)
 
     // Optimize transactions
     const users = members.map(m => ({ id: m.user.id, name: m.user.name }))

@@ -158,6 +158,9 @@ export default function GroupPage() {
                           {expense.paidBy.role === "BOSS" && (
                             <span className="ml-2 text-amber-600 font-medium">(šef - bez dugovanja)</span>
                           )}
+                          {group.type === "TRIP" && group.members.some(m => m.user.role === "TATA") && expense.paidBy.role !== "BOSS" && (
+                            <span className="ml-2 text-blue-600 font-medium">(tata plaća)</span>
+                          )}
                         </p>
                       </div>
                     </div>
@@ -252,6 +255,11 @@ export default function GroupPage() {
                       {member.user.role === "BOSS" && (
                         <span className="text-xs px-2 py-1 rounded bg-amber-100 text-amber-800 font-medium">
                           Šef
+                        </span>
+                      )}
+                      {member.user.role === "TATA" && (
+                        <span className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800 font-medium">
+                          Tata
                         </span>
                       )}
                       <span className={`text-xs px-2 py-1 rounded ${member.role === "ADMIN" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>

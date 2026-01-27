@@ -49,7 +49,7 @@ export async function GET() {
         where: { groupId: group.id },
       })
 
-      // Pronadji BOSS korisnike u grupi
+      // Pronadji BOSS i TATA korisnike u grupi
       const groupMembers = await prisma.groupMember.findMany({
         where: { groupId: group.id },
         include: { user: { select: { id: true, role: true } } },
@@ -57,8 +57,12 @@ export async function GET() {
       const bossUserIds = new Set(
         groupMembers.filter(m => m.user.role === "BOSS").map(m => m.user.id)
       )
+      // TATA preuzima troskove samo u TRIP grupama
+      const tataUserIds = group.type === "TRIP"
+        ? new Set(groupMembers.filter(m => m.user.role === "TATA").map(m => m.user.id))
+        : new Set<string>()
 
-      const balances = calculateBalances(expenses, settlements, bossUserIds)
+      const balances = calculateBalances(expenses, settlements, bossUserIds, tataUserIds)
       const userBalance = balances.get(userId) || 0
 
       if (userBalance > 0) {
