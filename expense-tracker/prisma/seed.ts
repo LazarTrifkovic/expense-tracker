@@ -38,14 +38,15 @@ async function main() {
 
   const ratko = await prisma.user.upsert({
     where: { email: "ratko@gmail.com" },
-    update: {},
+    update: { role: "BOSS" },
     create: {
       email: "ratko@gmail.com",
       name: "Ratko",
       password: await bcrypt.hash("20220316", 10),
+      role: "BOSS",
     },
   })
-  console.log("Korisnik: Ratko")
+  console.log("Korisnik: Ratko (šef)")
 
   const lazar = await prisma.user.findUnique({
     where: { email: "lazartrifkovic02@gmail.com" },
@@ -149,7 +150,7 @@ async function main() {
   console.log("  Dodato 8 troskova za stan")
 
   // ==========================================
-  // GRUPA 3: Put u Amsterdam
+  // GRUPA 3: Put u Amsterdam (Ratko je sef - placa ali mu niko ne duguje)
   // ==========================================
   const amsterdam = await prisma.group.create({
     data: {
@@ -164,18 +165,22 @@ async function main() {
       },
     },
   })
-  console.log("Grupa: Put u Amsterdam")
+  console.log("Grupa: Put u Amsterdam (Ratko = šef)")
 
   const amsterdamMembers = [lazar.id, ratko.id]
 
-  await createExpense(amsterdam.id, "Hostel (2 noci)", 12000, "OTHER", ratko.id, amsterdamMembers, new Date("2025-07-20"))
-  await createExpense(amsterdam.id, "Vecera - prvi dan", 5500, "FOOD", lazar.id, amsterdamMembers, new Date("2025-07-20"))
-  await createExpense(amsterdam.id, "Iznajmljivanje bicikala", 3000, "TRANSPORT", ratko.id, amsterdamMembers, new Date("2025-07-21"))
-  await createExpense(amsterdam.id, "Kanal tura", 4000, "ENTERTAINMENT", lazar.id, amsterdamMembers, new Date("2025-07-21"))
-  await createExpense(amsterdam.id, "Rucak u centru", 4200, "FOOD", ratko.id, amsterdamMembers, new Date("2025-07-21"))
-  await createExpense(amsterdam.id, "Muzej Van Gog", 3500, "ENTERTAINMENT", lazar.id, amsterdamMembers, new Date("2025-07-22"))
-  await createExpense(amsterdam.id, "Autobus do aerodroma", 1600, "TRANSPORT", ratko.id, amsterdamMembers, new Date("2025-07-22"))
-  console.log("  Dodato 7 troskova za Amsterdam")
+  // Ratko (sef) placa - prikazuje se ali niko ne duguje
+  await createExpense(amsterdam.id, "Hotel (2 noci)", 24000, "OTHER", ratko.id, amsterdamMembers, new Date("2025-07-20"))
+  await createExpense(amsterdam.id, "Vecera u restoranu", 8500, "FOOD", ratko.id, amsterdamMembers, new Date("2025-07-20"))
+  await createExpense(amsterdam.id, "Kanal tura - obilazak grada", 6000, "ENTERTAINMENT", ratko.id, amsterdamMembers, new Date("2025-07-21"))
+  await createExpense(amsterdam.id, "Rucak u centru", 5200, "FOOD", ratko.id, amsterdamMembers, new Date("2025-07-21"))
+  await createExpense(amsterdam.id, "Muzej Van Gog - ulaznice", 7000, "ENTERTAINMENT", ratko.id, amsterdamMembers, new Date("2025-07-22"))
+
+  // Lazar placa - ovo stvara normalne dugove
+  await createExpense(amsterdam.id, "Tramvajske karte", 1800, "TRANSPORT", lazar.id, amsterdamMembers, new Date("2025-07-21"))
+  await createExpense(amsterdam.id, "Iznajmljivanje bicikala", 3000, "TRANSPORT", lazar.id, amsterdamMembers, new Date("2025-07-22"))
+  await createExpense(amsterdam.id, "Autobus do aerodroma", 2000, "TRANSPORT", lazar.id, amsterdamMembers, new Date("2025-07-22"))
+  console.log("  Dodato 8 troskova za Amsterdam (5 sef, 3 Lazar)")
 
   console.log("\nSeed zavrsen uspesno!")
 }
