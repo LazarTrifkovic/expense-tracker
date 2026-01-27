@@ -48,6 +48,18 @@ async function main() {
   })
   console.log("Korisnik: Ratko (šef)")
 
+  const milan = await prisma.user.upsert({
+    where: { email: "milan@gmail.com" },
+    update: { role: "TATA" },
+    create: {
+      email: "milan@gmail.com",
+      name: "Milan",
+      password: await bcrypt.hash("6767", 10),
+      role: "TATA",
+    },
+  })
+  console.log("Korisnik: Milan (tata)")
+
   const lazar = await prisma.user.findUnique({
     where: { email: "lazartrifkovic02@gmail.com" },
   })
@@ -181,6 +193,44 @@ async function main() {
   await createExpense(amsterdam.id, "Iznajmljivanje bicikala", 3000, "TRANSPORT", lazar.id, amsterdamMembers, new Date("2025-07-22"))
   await createExpense(amsterdam.id, "Autobus do aerodroma", 2000, "TRANSPORT", lazar.id, amsterdamMembers, new Date("2025-07-22"))
   console.log("  Dodato 8 troskova za Amsterdam (5 sef, 3 Lazar)")
+
+  // ==========================================
+  // GRUPA 4: Put u Rim (Milan je tata - preuzima sve troskove na sebe)
+  // ==========================================
+  const rim = await prisma.group.create({
+    data: {
+      name: "Put u Rim",
+      type: "TRIP",
+      createdById: lazar.id,
+      members: {
+        create: [
+          { userId: lazar.id, role: "ADMIN" },
+          { userId: milan.id, role: "MEMBER" },
+          { userId: kristina.id, role: "MEMBER" },
+        ],
+      },
+    },
+  })
+  console.log("Grupa: Put u Rim (Milan = tata)")
+
+  const rimMembers = [lazar.id, milan.id, kristina.id]
+
+  // Lazar placa - ali Milan (tata) preuzima dug
+  await createExpense(rim.id, "Avio karte", 52000, "TRANSPORT", lazar.id, rimMembers, new Date("2025-09-05"), "RSD")
+  await createExpense(rim.id, "Taksi do hotela", 4500, "TRANSPORT", lazar.id, rimMembers, new Date("2025-09-05"), "RSD")
+  await createExpense(rim.id, "Vecera - prvi dan", 120, "FOOD", lazar.id, rimMembers, new Date("2025-09-05"), "EUR")
+
+  // Kristina placa - ali Milan (tata) preuzima dug
+  await createExpense(rim.id, "Koloseum ulaznice", 90, "ENTERTAINMENT", kristina.id, rimMembers, new Date("2025-09-06"), "EUR")
+  await createExpense(rim.id, "Rucak kod Trastevere", 85, "FOOD", kristina.id, rimMembers, new Date("2025-09-06"), "EUR")
+  await createExpense(rim.id, "Metro karte", 18, "TRANSPORT", kristina.id, rimMembers, new Date("2025-09-06"), "EUR")
+
+  // Milan (tata) placa - i dalje on duguje, trosak se prikazuje
+  await createExpense(rim.id, "Hotel (3 noci)", 450, "OTHER", milan.id, rimMembers, new Date("2025-09-05"), "EUR")
+  await createExpense(rim.id, "Vatikanski muzej", 75, "ENTERTAINMENT", milan.id, rimMembers, new Date("2025-09-07"), "EUR")
+  await createExpense(rim.id, "Vecera poslednji dan", 140, "FOOD", milan.id, rimMembers, new Date("2025-09-07"), "EUR")
+  await createExpense(rim.id, "Autobus do aerodroma", 3200, "TRANSPORT", lazar.id, rimMembers, new Date("2025-09-08"), "RSD")
+  console.log("  Dodato 10 troskova za Rim (3 Lazar, 3 Kristina, 3 Milan, 1 Lazar)")
 
   console.log("\nSeed zavrsen uspesno!")
 }
