@@ -21,12 +21,18 @@ export function calculateBalances(
     receiverId: string
     amount: number
     status: string
-  }[]
+  }[],
+  bossUserIds: Set<string> = new Set()
 ): Map<string, number> {
   const balances = new Map<string, number>()
 
   // Racunanje iz troskova
   for (const expense of expenses) {
+    // Ako je platioc BOSS, preskacemo kredit i splitove - niko ne duguje sefu
+    if (bossUserIds.has(expense.paidById)) {
+      continue
+    }
+
     // Onaj ko je platio dobija kredit
     const currentPaidBy = balances.get(expense.paidById) || 0
     balances.set(expense.paidById, currentPaidBy + expense.amount)

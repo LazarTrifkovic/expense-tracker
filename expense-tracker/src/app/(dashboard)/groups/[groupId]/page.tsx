@@ -17,7 +17,7 @@ import { SettlementDialog } from "@/components/settlements/settlement-dialog"
 interface GroupMember {
   id: string
   role: string
-  user: { id: string; name: string | null; email: string; image: string | null }
+  user: { id: string; name: string | null; email: string; image: string | null; role?: string }
 }
 
 interface Expense {
@@ -27,7 +27,7 @@ interface Expense {
   currency?: string
   date: string
   category: Category
-  paidBy: { id: string; name: string | null; email: string }
+  paidBy: { id: string; name: string | null; email: string; role?: string }
   splits: { userId: string; amount: number; user: { name: string | null } }[]
 }
 
@@ -155,6 +155,9 @@ export default function GroupPage() {
                         <p className="font-medium">{expense.title}</p>
                         <p className="text-sm text-muted-foreground">
                           {expense.paidBy.name || expense.paidBy.email} je platio/la - {CATEGORY_LABELS[expense.category]}
+                          {expense.paidBy.role === "BOSS" && (
+                            <span className="ml-2 text-amber-600 font-medium">(šef - bez dugovanja)</span>
+                          )}
                         </p>
                       </div>
                     </div>
@@ -245,9 +248,16 @@ export default function GroupPage() {
                         <p className="text-sm text-muted-foreground">{member.user.email}</p>
                       </div>
                     </div>
-                    <span className={`text-xs px-2 py-1 rounded ${member.role === "ADMIN" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
-                      {member.role === "ADMIN" ? "Admin" : "Član"}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {member.user.role === "BOSS" && (
+                        <span className="text-xs px-2 py-1 rounded bg-amber-100 text-amber-800 font-medium">
+                          Šef
+                        </span>
+                      )}
+                      <span className={`text-xs px-2 py-1 rounded ${member.role === "ADMIN" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+                        {member.role === "ADMIN" ? "Admin" : "Član"}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>

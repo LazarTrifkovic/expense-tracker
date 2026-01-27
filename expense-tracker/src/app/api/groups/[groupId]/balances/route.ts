@@ -40,12 +40,17 @@ export async function GET(
     const members = await prisma.groupMember.findMany({
       where: { groupId },
       include: {
-        user: { select: { id: true, name: true, email: true } },
+        user: { select: { id: true, name: true, email: true, role: true } },
       },
     })
 
+    // Pronadji BOSS korisnike - njihovi troskovi se prikazuju ali im niko ne duguje
+    const bossUserIds = new Set(
+      members.filter(m => m.user.role === "BOSS").map(m => m.user.id)
+    )
+
     // Calculate balances
-    const balances = calculateBalances(expenses, settlements)
+    const balances = calculateBalances(expenses, settlements, bossUserIds)
 
     // Optimize transactions
     const users = members.map(m => ({ id: m.user.id, name: m.user.name }))

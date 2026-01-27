@@ -49,7 +49,16 @@ export async function GET() {
         where: { groupId: group.id },
       })
 
-      const balances = calculateBalances(expenses, settlements)
+      // Pronadji BOSS korisnike u grupi
+      const groupMembers = await prisma.groupMember.findMany({
+        where: { groupId: group.id },
+        include: { user: { select: { id: true, role: true } } },
+      })
+      const bossUserIds = new Set(
+        groupMembers.filter(m => m.user.role === "BOSS").map(m => m.user.id)
+      )
+
+      const balances = calculateBalances(expenses, settlements, bossUserIds)
       const userBalance = balances.get(userId) || 0
 
       if (userBalance > 0) {
