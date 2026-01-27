@@ -21,14 +21,13 @@ export const expenseSchema = z.object({
   title: z.string().min(1, "Naziv troška je obavezan"),
   description: z.string().optional(),
   amount: z.number().positive("Iznos mora biti pozitivan"),
+  currency: z.enum(["RSD", "EUR"]).default("RSD"),
   date: z.string().or(z.date()),
   category: z.enum(["FOOD", "TRANSPORT", "UTILITIES", "ENTERTAINMENT", "SHOPPING", "OTHER"]),
-  splitType: z.enum(["EQUAL", "UNEQUAL", "PERCENTAGE", "SHARES"]),
+  splitType: z.enum(["EQUAL", "UNEQUAL"]),
   splits: z.array(z.object({
     userId: z.string(),
-    amount: z.number().optional(),
-    percentage: z.number().optional(),
-    shares: z.number().optional(),
+    amount: z.number(),
   })).optional(),
 })
 

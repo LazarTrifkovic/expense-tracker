@@ -71,6 +71,7 @@ export async function GET() {
         id: e.id,
         title: e.title,
         amount: e.amount,
+        currency: e.currency,
         groupName: e.group.name,
         date: e.date.toISOString(),
       })),

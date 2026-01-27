@@ -14,6 +14,7 @@ interface DashboardData {
     id: string
     title: string
     amount: number
+    currency?: string
     groupName: string
     date: string
   }[]
@@ -220,7 +221,7 @@ export default function DashboardPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-slate-900">{formatCurrency(expense.amount)}</p>
+                      <p className="font-semibold text-slate-900">{formatCurrency(expense.amount, expense.currency || "RSD")}</p>
                       <p className="text-sm text-slate-500">
                         {new Date(expense.date).toLocaleDateString("sr-RS", { day: 'numeric', month: 'short' })}
                       </p>

@@ -113,6 +113,7 @@ model Expense {
   title       String
   description String?
   amount      Float
+  currency    String    @default("RSD")
   date        DateTime  @default(now())
   category    Category  @default(OTHER)
   splitType   SplitType @default(EQUAL)

@@ -24,6 +24,7 @@ interface Expense {
   id: string
   title: string
   amount: number
+  currency?: string
   date: string
   category: Category
   paidBy: { id: string; name: string | null; email: string }
@@ -158,7 +159,7 @@ export default function GroupPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold">{formatCurrency(expense.amount)}</p>
+                      <p className="font-bold">{formatCurrency(expense.amount, expense.currency || "RSD")}</p>
                       <p className="text-sm text-muted-foreground">{formatDate(expense.date)}</p>
                     </div>
                   </CardContent>

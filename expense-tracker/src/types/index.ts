@@ -1,6 +1,7 @@
 export type GroupType = "APARTMENT" | "TRIP" | "PROJECT" | "OTHER"
 export type Category = "FOOD" | "TRANSPORT" | "UTILITIES" | "ENTERTAINMENT" | "SHOPPING" | "OTHER"
 export type SplitType = "EQUAL" | "UNEQUAL" | "PERCENTAGE" | "SHARES"
+export type Currency = "RSD" | "EUR"
 
 export const GROUP_TYPE_LABELS: Record<GroupType, string> = {
   APARTMENT: "Stan",
@@ -18,11 +19,14 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   OTHER: "Ostalo",
 }
 
-export const SPLIT_TYPE_LABELS: Record<SplitType, string> = {
+export const SPLIT_TYPE_LABELS: Record<string, string> = {
   EQUAL: "Jednako",
   UNEQUAL: "Nejednako",
-  PERCENTAGE: "Po procentima",
-  SHARES: "Po udelima",
+}
+
+export const CURRENCY_LABELS: Record<Currency, string> = {
+  RSD: "RSD",
+  EUR: "EUR",
 }
 
 export interface GroupWithMembers {
@@ -51,6 +55,7 @@ export interface ExpenseWithDetails {
   title: string
   description: string | null
   amount: number
+  currency: string
   date: Date
   category: Category
   splitType: SplitType

@@ -98,6 +98,7 @@ export async function POST(
         title: validatedData.title,
         description: validatedData.description,
         amount: validatedData.amount,
+        currency: validatedData.currency,
         date: new Date(validatedData.date),
         category: validatedData.category,
         splitType: validatedData.splitType,
