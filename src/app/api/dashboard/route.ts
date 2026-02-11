@@ -4,6 +4,50 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { calculateBalances } from "@/lib/balance"
 
+/**
+ * @swagger
+ * /api/dashboard:
+ *   get:
+ *     summary: Dohvati dashboard statistike
+ *     description: Vraca pregled dugovanja, grupa i poslednjih troskova za ulogovanog korisnika
+ *     tags:
+ *       - Dashboard
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Dashboard podaci
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalOwed:
+ *                   type: number
+ *                   description: Ukupno vam duguju
+ *                 totalOwes:
+ *                   type: number
+ *                   description: Ukupno dugujete
+ *                 groups:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       memberCount:
+ *                         type: number
+ *                 recentExpenses:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Expense'
+ *       401:
+ *         description: Korisnik nije ulogovan
+ *       500:
+ *         description: Greska na serveru
+ */
 export async function GET() {
   try {
     const session = await getServerSession(authOptions)

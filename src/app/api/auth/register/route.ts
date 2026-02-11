@@ -3,6 +3,44 @@ import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { registerSchema } from "@/lib/validators"
 
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Registracija novog korisnika
+ *     description: Kreira novi korisnicki nalog sa email verifikacijom
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Ime korisnika
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email adresa
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: Lozinka (min 6 karaktera)
+ *     responses:
+ *       201:
+ *         description: Korisnik uspesno registrovan
+ *       400:
+ *         description: Email vec postoji
+ *       500:
+ *         description: Greska na serveru
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json()

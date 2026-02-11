@@ -4,6 +4,30 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { groupSchema } from "@/lib/validators"
 
+/**
+ * @swagger
+ * /api/groups:
+ *   get:
+ *     summary: Dohvati sve grupe korisnika
+ *     description: Vraca listu svih grupa u kojima je trenutni korisnik clan
+ *     tags:
+ *       - Groups
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista grupa
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Group'
+ *       401:
+ *         description: Korisnik nije ulogovan
+ *       500:
+ *         description: Greska na serveru
+ */
 export async function GET() {
   try {
     const session = await getServerSession(authOptions)
@@ -33,6 +57,48 @@ export async function GET() {
   }
 }
 
+/**
+ * @swagger
+ * /api/groups:
+ *   post:
+ *     summary: Kreiraj novu grupu
+ *     description: Kreira novu grupu i dodaje trenutnog korisnika kao admina
+ *     tags:
+ *       - Groups
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - type
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Naziv grupe
+ *               description:
+ *                 type: string
+ *                 description: Opis grupe
+ *               type:
+ *                 type: string
+ *                 enum: [APARTMENT, TRIP, PROJECT, OTHER]
+ *                 description: Tip grupe
+ *     responses:
+ *       201:
+ *         description: Grupa uspesno kreirana
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Group'
+ *       401:
+ *         description: Korisnik nije ulogovan
+ *       500:
+ *         description: Greska na serveru
+ */
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
