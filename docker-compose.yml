@@ -1,6 +1,5 @@
-version: '3.8'
-
 services:
+  # PostgreSQL baza podataka
   db:
     image: postgres:15-alpine
     container_name: expense_tracker_db
@@ -13,6 +12,28 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Next.js aplikacija
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: expense_tracker_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/expense_tracker?schema=public
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-super-secret-key-change-in-production}
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   postgres_data:
