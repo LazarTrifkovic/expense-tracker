@@ -116,6 +116,74 @@ export async function GET() {
       }
     }
 
+    // Dohvati sve troskove za grafike
+    const allExpenses = await prisma.expense.findMany({
+      where: {
+        groupId: { in: groups.map(g => g.id) },
+      },
+      select: {
+        amount: true,
+        category: true,
+        currency: true,
+        date: true,
+        group: { select: { name: true } },
+      },
+    })
+
+    // Grupisi po kategorijama za pie chart
+    const categoryTotals = allExpenses.reduce((acc, expense) => {
+      const category = expense.category
+      if (!acc[category]) {
+        acc[category] = 0
+      }
+      // Konvertuj u RSD za konzistentnost (pojednostavljena konverzija)
+      const amountInRSD = expense.currency === "EUR" ? expense.amount * 117 : expense.amount
+      acc[category] += amountInRSD
+      return acc
+    }, {} as Record<string, number>)
+
+    const expensesByCategory = Object.entries(categoryTotals).map(([category, total]) => ({
+      category,
+      total: Math.round(total),
+    }))
+
+    // Grupisi po mesecima za bar chart (poslednjih 6 meseci)
+    const sixMonthsAgo = new Date()
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
+
+    const monthlyTotals = allExpenses
+      .filter(e => new Date(e.date) >= sixMonthsAgo)
+      .reduce((acc, expense) => {
+        const month = new Date(expense.date).toLocaleDateString("sr-RS", { month: "short", year: "2-digit" })
+        if (!acc[month]) {
+          acc[month] = 0
+        }
+        const amountInRSD = expense.currency === "EUR" ? expense.amount * 117 : expense.amount
+        acc[month] += amountInRSD
+        return acc
+      }, {} as Record<string, number>)
+
+    const expensesByMonth = Object.entries(monthlyTotals).map(([month, total]) => ({
+      month,
+      total: Math.round(total),
+    }))
+
+    // Grupisi po grupama za uporedni prikaz
+    const groupTotals = allExpenses.reduce((acc, expense) => {
+      const groupName = expense.group.name
+      if (!acc[groupName]) {
+        acc[groupName] = 0
+      }
+      const amountInRSD = expense.currency === "EUR" ? expense.amount * 117 : expense.amount
+      acc[groupName] += amountInRSD
+      return acc
+    }, {} as Record<string, number>)
+
+    const expensesByGroup = Object.entries(groupTotals).map(([name, total]) => ({
+      name,
+      total: Math.round(total),
+    }))
+
     return NextResponse.json({
       totalOwed,
       totalOwes,
@@ -132,6 +200,10 @@ export async function GET() {
         groupName: e.group.name,
         date: e.date.toISOString(),
       })),
+      // Podaci za grafike
+      expensesByCategory,
+      expensesByMonth,
+      expensesByGroup,
     })
   } catch (error) {
     console.error("Dashboard error:", error)
