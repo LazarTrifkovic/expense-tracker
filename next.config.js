@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone', // Potrebno za Docker deployment
+  // output: 'standalone' se koristi samo za Docker deployment
+  // Vercel ne zahteva ovu opciju
 }
 
 module.exports = nextConfig
