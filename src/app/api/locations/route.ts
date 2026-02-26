@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { getLocationCoordinates, POPULAR_DESTINATIONS } from "@/lib/external-apis"
 
+export const dynamic = 'force-dynamic'
+
 /**
  * @swagger
  * /api/locations:

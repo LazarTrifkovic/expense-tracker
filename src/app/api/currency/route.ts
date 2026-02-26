@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { getExchangeRates, convertCurrency, SUPPORTED_CURRENCIES } from "@/lib/external-apis"
 
+export const dynamic = 'force-dynamic'
+
 /**
  * @swagger
  * /api/currency:
