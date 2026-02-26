@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { registerSchema } from "@/lib/validators"
 
+export const dynamic = 'force-dynamic'
+
 /**
  * @swagger
  * /api/auth/register:

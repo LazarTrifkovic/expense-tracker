@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { calculateBalances } from "@/lib/balance"
 
+export const dynamic = 'force-dynamic'
+
 /**
  * @swagger
  * /api/dashboard:
