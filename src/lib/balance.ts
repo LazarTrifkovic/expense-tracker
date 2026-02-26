@@ -28,7 +28,7 @@ export function calculateBalances(
   const balances = new Map<string, number>()
 
   // Pronalazimo prvog TATA korisnika (ako postoji)
-  const tataUserId = tataUserIds.size > 0 ? [...tataUserIds][0] : null
+  const tataUserId = tataUserIds.size > 0 ? Array.from(tataUserIds)[0] : null
 
   // Racunanje iz troskova
   for (const expense of expenses) {
