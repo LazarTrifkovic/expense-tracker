@@ -70,7 +70,7 @@ export async function GET() {
     // Get recent expenses from user's groups
     const recentExpenses = await prisma.expense.findMany({
       where: {
-        groupId: { in: groups.map(g => g.id) },
+        groupId: { in: groups.map((g: any) => g.id) },
       },
       include: {
         group: { select: { name: true } },
@@ -98,12 +98,12 @@ export async function GET() {
         where: { groupId: group.id },
         include: { user: { select: { id: true, role: true } } },
       })
-      const bossUserIds = new Set(
-        groupMembers.filter(m => m.user.role === "BOSS").map(m => m.user.id)
+      const bossUserIds = new Set<string>(
+        groupMembers.filter((m: any) => m.user.role === "BOSS").map((m: any) => m.user.id)
       )
       // TATA preuzima troskove samo u TRIP grupama
       const tataUserIds = group.type === "TRIP"
-        ? new Set(groupMembers.filter(m => m.user.role === "TATA").map(m => m.user.id))
+        ? new Set<string>(groupMembers.filter((m: any) => m.user.role === "TATA").map((m: any) => m.user.id))
         : new Set<string>()
 
       const balances = calculateBalances(expenses, settlements, bossUserIds, tataUserIds)
@@ -119,7 +119,7 @@ export async function GET() {
     // Dohvati sve troskove za grafike
     const allExpenses = await prisma.expense.findMany({
       where: {
-        groupId: { in: groups.map(g => g.id) },
+        groupId: { in: groups.map((g: any) => g.id) },
       },
       select: {
         amount: true,
@@ -131,7 +131,7 @@ export async function GET() {
     })
 
     // Grupisi po kategorijama za pie chart
-    const categoryTotals = allExpenses.reduce((acc, expense) => {
+    const categoryTotals = allExpenses.reduce((acc: Record<string, number>, expense: any) => {
       const category = expense.category
       if (!acc[category]) {
         acc[category] = 0
@@ -144,7 +144,7 @@ export async function GET() {
 
     const expensesByCategory = Object.entries(categoryTotals).map(([category, total]) => ({
       category,
-      total: Math.round(total),
+      total: Math.round(total as number),
     }))
 
     // Grupisi po mesecima za bar chart (poslednjih 6 meseci)
@@ -152,8 +152,8 @@ export async function GET() {
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
 
     const monthlyTotals = allExpenses
-      .filter(e => new Date(e.date) >= sixMonthsAgo)
-      .reduce((acc, expense) => {
+      .filter((e: any) => new Date(e.date) >= sixMonthsAgo)
+      .reduce((acc: Record<string, number>, expense: any) => {
         const month = new Date(expense.date).toLocaleDateString("sr-RS", { month: "short", year: "2-digit" })
         if (!acc[month]) {
           acc[month] = 0
@@ -165,11 +165,11 @@ export async function GET() {
 
     const expensesByMonth = Object.entries(monthlyTotals).map(([month, total]) => ({
       month,
-      total: Math.round(total),
+      total: Math.round(total as number),
     }))
 
     // Grupisi po grupama za uporedni prikaz
-    const groupTotals = allExpenses.reduce((acc, expense) => {
+    const groupTotals = allExpenses.reduce((acc: Record<string, number>, expense: any) => {
       const groupName = expense.group.name
       if (!acc[groupName]) {
         acc[groupName] = 0
@@ -181,18 +181,18 @@ export async function GET() {
 
     const expensesByGroup = Object.entries(groupTotals).map(([name, total]) => ({
       name,
-      total: Math.round(total),
+      total: Math.round(total as number),
     }))
 
     return NextResponse.json({
       totalOwed,
       totalOwes,
-      groups: groups.map(g => ({
+      groups: groups.map((g: any) => ({
         id: g.id,
         name: g.name,
         memberCount: g._count.members,
       })),
-      recentExpenses: recentExpenses.map(e => ({
+      recentExpenses: recentExpenses.map((e: any) => ({
         id: e.id,
         title: e.title,
         amount: e.amount,

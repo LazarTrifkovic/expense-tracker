@@ -45,8 +45,8 @@ export async function GET(
     })
 
     // Pronadji BOSS korisnike - njihovi troskovi se prikazuju ali im niko ne duguje
-    const bossUserIds = new Set(
-      members.filter(m => m.user.role === "BOSS").map(m => m.user.id)
+    const bossUserIds = new Set<string>(
+      members.filter((m: any) => m.user.role === "BOSS").map((m: any) => m.user.id)
     )
 
     // Pronadji TATA korisnike - u TRIP grupama tata preuzima sve troskove
@@ -55,18 +55,18 @@ export async function GET(
       select: { type: true },
     })
     const tataUserIds = group?.type === "TRIP"
-      ? new Set(members.filter(m => m.user.role === "TATA").map(m => m.user.id))
+      ? new Set<string>(members.filter((m: any) => m.user.role === "TATA").map((m: any) => m.user.id))
       : new Set<string>()
 
     // Calculate balances
     const balances = calculateBalances(expenses, settlements, bossUserIds, tataUserIds)
 
     // Optimize transactions
-    const users = members.map(m => ({ id: m.user.id, name: m.user.name }))
+    const users = members.map((m: any) => ({ id: m.user.id, name: m.user.name }))
     const optimizedDebts = optimizeTransactions(balances, users)
 
     // Format member balances
-    const memberBalances = members.map(m => ({
+    const memberBalances = members.map((m: any) => ({
       user: m.user,
       balance: balances.get(m.user.id) || 0,
     }))

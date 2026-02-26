@@ -80,7 +80,7 @@ export async function POST(
 
     if (validatedData.splitType === "EQUAL") {
       const splitAmount = validatedData.amount / members.length
-      splits = members.map(m => ({
+      splits = members.map((m: any) => ({
         userId: m.userId,
         amount: Math.round(splitAmount * 100) / 100,
       }))
