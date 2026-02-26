@@ -88,8 +88,8 @@ export async function POST(
       splits = validatedData.splits.map(s => ({
         userId: s.userId,
         amount: s.amount || 0,
-        percentage: s.percentage,
-        shares: s.shares,
+        percentage: (s as any).percentage,
+        shares: (s as any).shares,
       }))
     }
 
