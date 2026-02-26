@@ -87,11 +87,11 @@ export function optimizeTransactions(
   const debtors: { userId: string; amount: number }[] = []
   const creditors: { userId: string; amount: number }[] = []
 
-  balances.forEach((balance, odUserId) => {
+  balances.forEach((balance, userId) => {
     if (balance < -0.01) {
-      debtors.push({ odUserId, amount: Math.abs(balance) })
+      debtors.push({ userId, amount: Math.abs(balance) })
     } else if (balance > 0.01) {
-      creditors.push({ userId: odUserId, amount: balance })
+      creditors.push({ userId, amount: balance })
     }
   })
 
@@ -113,7 +113,7 @@ export function optimizeTransactions(
 
     if (amount > 0.01) {
       transactions.push({
-        odUser: userMap.get(debtor.odUserId) || { id: debtor.odUserId, name: null },
+        odUser: userMap.get(debtor.userId) || { id: debtor.userId, name: null },
         kaUser: userMap.get(creditor.userId) || { id: creditor.userId, name: null },
         iznos: Math.round(amount * 100) / 100,
       })
