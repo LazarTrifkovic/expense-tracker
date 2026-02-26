@@ -45,8 +45,8 @@ export async function GET(request: Request) {
     // Inace vrati sve popularne destinacije
     const destinations = Object.entries(POPULAR_DESTINATIONS).map(([key, value]) => ({
       id: key.toLowerCase().replace(/\s+/g, "-"),
-      name: key,
       ...value,
+      displayName: key,
     }))
 
     return NextResponse.json({
