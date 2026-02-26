@@ -1,15 +1,17 @@
 const fs = require('fs');
 const path = require('path');
 
-const exportDetailPath = path.join(process.cwd(), '.next', 'export-detail.json');
+const nextDir = path.join(process.cwd(), '.next');
+const exportDetailPath = path.join(nextDir, 'export-detail.json');
 
 if (!fs.existsSync(exportDetailPath)) {
-  console.log('Creating missing export-detail.json...');
+  console.log('Creating missing export-detail.json for Vercel compatibility...');
   fs.writeFileSync(exportDetailPath, JSON.stringify({
     version: 1,
-    outDirectory: 'out'
+    outDirectory: 'out',
+    success: true
   }));
-  console.log('export-detail.json created successfully');
+  console.log('export-detail.json created at:', exportDetailPath);
 } else {
   console.log('export-detail.json already exists');
 }
