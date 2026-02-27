@@ -826,4 +826,4 @@ Aplikacija je postavljena na cloud korišćenjem dve platforme:
 
 **Neon** se koristi za hosting PostgreSQL baze podataka u cloud-u. Neon je serverless platforma koja podržava connection pooling i automatsko skaliranje, sa SSL enkripcijom za sigurnu komunikaciju. Kompatibilan je sa Prisma ORM-om i pruža besplatan tier za razvojne projekte.
 
-URL produkcione aplikacije: [DODATI URL NAKON DEPLOYMENTA]
+URL produkcione aplikacije: https://expense-tracker-lt.vercel.app
